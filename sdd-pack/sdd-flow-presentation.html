@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Standard SDD Artifact Flow</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f7f4;
+      --ink: #222;
+      --muted: #666;
+      --line: #d8d6cf;
+      --card: #fff;
+      --accent: #0f766e;
+      --accent-2: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 48px 24px 64px;
+    }
+
+    header {
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(120px, 1fr));
+      gap: 12px;
+      align-items: stretch;
+      margin: 32px 0;
+    }
+
+    .node {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 118px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .node strong {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: var(--accent-2);
+    }
+
+    .node span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .node.primary {
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+      box-shadow: inset 4px 0 0 var(--accent);
+    }
+
+    .arrow {
+      display: none;
+    }
+
+    section {
+      margin-top: 40px;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 22px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    th {
+      background: #eeece5;
+      font-weight: 650;
+    }
+
+    code {
+      background: #efeee8;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.95em;
+    }
+
+    .note {
+      margin-top: 24px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfaf6;
+      color: var(--muted);
+    }
+
+    @media (max-width: 860px) {
+      .flow {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      main {
+        padding: 32px 16px 48px;
+      }
+
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Standard SDD Artifact Flow</h1>
+      <p class="subtitle">Pure skill workflow: requirement → plan/research → ADR → tasks → implementation → debt.</p>
+    </header>
+
+    <div class="flow" aria-label="Standard SDD artifact flow">
+      <div class="node primary">
+        <strong>Requirement</strong>
+        <span><code>requirement.md</code><br>长期需求事实、用户故事、验收标准。</span>
+      </div>
+      <div class="node primary">
+        <strong>Plan</strong>
+        <span><code>plan.md</code><br>技术设计、文件结构、测试策略。</span>
+      </div>
+      <div class="node">
+        <strong>Research</strong>
+        <span><code>research.md</code><br>仅在存在真实不确定性时生成。</span>
+      </div>
+      <div class="node">
+        <strong>ADR</strong>
+        <span><code>docs/adr/</code><br>只沉淀长期关键决策。</span>
+      </div>
+      <div class="node primary">
+        <strong>Tasks</strong>
+        <span><code>tasks.md</code><br>Files、Interfaces、TDD 微步骤、Review Gate。</span>
+      </div>
+      <div class="node primary">
+        <strong>Implement / Debt</strong>
+        <span>按任务验证落地；已接受遗留进入 <code>docs/debt/</code>。</span>
+      </div>
+    </div>
+
+    <section>
+      <h2>Artifact Rules</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Artifact</th>
+            <th>Policy</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>requirement.md</code></td>
+            <td>Required</td>
+            <td>Authoritative behavior and acceptance source.</td>
+          </tr>
+          <tr>
+            <td><code>plan.md</code></td>
+            <td>Required</td>
+            <td>Design strategy, technical context, file mapping, test strategy.</td>
+          </tr>
+          <tr>
+            <td><code>research.md</code></td>
+            <td>Optional</td>
+            <td>Evidence for uncertain decisions, choices, constraints, and risks.</td>
+          </tr>
+          <tr>
+            <td><code>docs/adr/</code></td>
+            <td>Optional</td>
+            <td>Durable decisions that future maintainers will need explained.</td>
+          </tr>
+          <tr>
+            <td><code>tasks.md</code></td>
+            <td>Required</td>
+            <td>Executable task tree organized by user story and phase.</td>
+          </tr>
+          <tr>
+            <td><code>docs/debt/</code></td>
+            <td>Optional</td>
+            <td>Accepted non-blocking follow-up work after implementation.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <p class="note">
+      这是展示材料，不是 skill 运行时文件。集成到支持 skill 的仓库时，只需要复制 <code>standard/</code>。
+    </p>
+  </main>
+</body>
+</html>

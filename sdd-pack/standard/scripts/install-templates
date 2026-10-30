@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: install-templates [--force] [target-repo]
+
+Copy Standard SDD stage templates into target-repo/.sdd/templates.
+
+Options:
+  --force   overwrite existing templates
+  --help    show this help
+
+If target-repo is omitted, the current working directory is used.
+EOF
+}
+
+force=0
+target="."
+target_set=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --force)
+      force=1
+      shift
+      ;;
+    --help|-h)
+      usage
+      exit 0
+      ;;
+    -*)
+      echo "Unknown option: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+    *)
+      if [[ "$target_set" -eq 1 ]]; then
+        echo "Only one target-repo argument is supported." >&2
+        exit 2
+      fi
+      target="$1"
+      target_set=1
+      shift
+      ;;
+  esac
+done
+
+script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+skill_dir="$(CDPATH= cd -- "$script_dir/.." && pwd)"
+if [[ ! -d "$target" ]]; then
+  echo "Target repo does not exist: $target" >&2
+  exit 1
+fi
+
+target_root="$(CDPATH= cd -- "$target" && pwd)"
+dest_dir="$target_root/.sdd/templates"
+mkdir -p "$dest_dir"
+
+installed=0
+skipped=0
+found=0
+
+for src in "$skill_dir"/*/templates/*.md; do
+  [[ -e "$src" ]] || continue
+  found=$((found + 1))
+  name="$(basename "$src")"
+  dest="$dest_dir/$name"
+
+  if [[ -e "$dest" && "$force" -ne 1 ]]; then
+    echo "skip     .sdd/templates/$name"
+    skipped=$((skipped + 1))
+    continue
+  fi
+
+  cp "$src" "$dest"
+  echo "install  .sdd/templates/$name"
+  installed=$((installed + 1))
+done
+
+if [[ "$found" -eq 0 ]]; then
+  echo "No stage templates found under: $skill_dir" >&2
+  exit 1
+fi
+
+echo "Done: $installed installed, $skipped skipped."
